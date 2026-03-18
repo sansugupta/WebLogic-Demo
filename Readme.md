@@ -1,105 +1,252 @@
-# WebLogic Demo Application 🚀
+# Incident Management System
 
-A simple Java web application using Maven that can be deployed as a WAR file to WebLogic or any Java EE application server.
+A production-style Java web application for managing incidents, built with Spring Boot and designed for WebLogic deployment.
 
-## Project Structure
+## 🚀 Features
+
+### Core Functionality
+- **Incident Management**: Create, read, update, and delete incidents
+- **Status Tracking**: Track incident status (Open, In Progress, Resolved)
+- **Priority Management**: Set priority levels (Low, Medium, High, Critical)
+- **RESTful APIs**: Complete REST API for programmatic access
+- **Web Interface**: User-friendly JSP-based web UI
+- **Health Monitoring**: Built-in health check endpoints
+
+### Technical Features
+- **Production-Ready**: Proper logging, exception handling, and validation
+- **Clean Architecture**: Layered architecture (Controller → Service → Repository)
+- **In-Memory Storage**: Thread-safe concurrent data storage
+- **Environment Support**: Configurable for different environments
+- **WAR Deployment**: Ready for WebLogic server deployment
+
+## 🏗️ Architecture
 
 ```
-weblogic-demo/
-├── pom.xml
-├── src/
-│   └── main/
-│       ├── java/
-│       │   └── com/
-│       │       └── example/
-│       │           └── demo/
-│       │               ├── HelloResource.java
-│       │               └── RestApplication.java
-│       └── webapp/
-│           ├── WEB-INF/
-│           │   └── web.xml
-│           └── index.jsp
+src/main/java/com/example/incident/
+├── IncidentManagementApplication.java    # Main Spring Boot application
+├── controller/
+│   ├── IncidentController.java          # REST API endpoints
+│   ├── WebController.java               # Web UI controllers
+│   └── HealthController.java            # Health check endpoints
+├── service/
+│   └── IncidentService.java             # Business logic layer
+├── repository/
+│   └── IncidentRepository.java          # Data access layer
+├── model/
+│   ├── Incident.java                    # Incident entity
+│   ├── Status.java                      # Status enumeration
+│   └── Priority.java                    # Priority enumeration
+└── exception/
+    ├── IncidentNotFoundException.java   # Custom exception
+    └── GlobalExceptionHandler.java     # Global error handling
 ```
 
-## Features
+## 📋 API Endpoints
 
-- REST endpoint at `/api/hello` that returns: "Hello from WebLogic Demo App 🚀"
-- Simple JSP landing page at root
-- Java 11 compatible (also works with Java 8)
-- Packaged as WAR file
+### Incident Management
+- `POST /incidents` - Create new incident
+- `GET /incidents` - Get all incidents
+- `GET /incidents?status=OPEN` - Filter by status
+- `GET /incidents/{id}` - Get incident by ID
+- `PUT /incidents/{id}` - Update entire incident
+- `PUT /incidents/{id}/status` - Update incident status
+- `DELETE /incidents/{id}` - Delete incident
+- `GET /incidents/stats` - Get incident statistics
 
-## Prerequisites
+### Health & Monitoring
+- `GET /health` - Application health check
+- `GET /info` - Application information
 
-- Java 8 or 11 installed
-- Maven 3.6+ installed
-- WebLogic Server (or any Java EE application server)
+### Web Interface
+- `/` - Redirects to incident list
+- `/web/incidents` - Incident dashboard
+- `/web/incidents/new` - Create incident form
+- `/web/incidents/{id}` - Incident details
 
-## Building the WAR File
+## 🛠️ Technology Stack
 
-### Option 1: Using Maven Command
+- **Java 11** - Programming language
+- **Spring Boot 2.7.18** - Application framework
+- **Maven** - Build tool
+- **JSP + JSTL** - Web UI technology
+- **SLF4J + Logback** - Logging framework
+- **Bean Validation** - Input validation
+- **Concurrent Collections** - Thread-safe data storage
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Java 11 or higher
+- Maven 3.6+
+- WebLogic Server (for deployment)
+
+### Building the Application
+
+1. **Clean and compile:**
+   ```bash
+   mvn clean compile
+   ```
+
+2. **Run tests (if any):**
+   ```bash
+   mvn test
+   ```
+
+3. **Build WAR file:**
+   ```bash
+   mvn clean package
+   ```
+
+4. **Generated WAR location:**
+   ```
+   target/incident-management.war
+   ```
+
+### Running Locally (Development)
 
 ```bash
-mvn clean package
+mvn spring-boot:run
 ```
 
-The WAR file will be generated at: `target/weblogic-demo.war`
+Access the application at: `http://localhost:8080`
 
-### Option 2: Step-by-step Build
+### WebLogic Deployment
+
+1. Build the WAR file using Maven
+2. Deploy `target/incident-management.war` to WebLogic Server
+3. Access via your WebLogic server URL
+
+## 🔧 Configuration
+
+### Environment Variables
+- `APP_ENV` - Environment (dev/prod) - defaults to "dev"
+
+### Application Properties
+Located in `src/main/resources/application.properties`:
+
+```properties
+# Application Configuration
+spring.application.name=incident-management-system
+server.port=8080
+
+# Environment Configuration
+app.env=${APP_ENV:dev}
+
+# JSP Configuration
+spring.mvc.view.prefix=/WEB-INF/jsp/
+spring.mvc.view.suffix=.jsp
+
+# Logging Configuration
+logging.level.com.example.incident=INFO
+```
+
+## 📊 Usage Examples
+
+### Creating an Incident via API
 
 ```bash
-# Clean previous builds
-mvn clean
-
-# Compile the code
-mvn compile
-
-# Package as WAR
-mvn package
+curl -X POST http://localhost:8080/incidents \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Server Down",
+    "description": "Production server is not responding",
+    "status": "OPEN",
+    "priority": "CRITICAL"
+  }'
 ```
 
-### Option 3: Skip Tests (if any)
+### Getting All Incidents
 
 ```bash
-mvn clean package -DskipTests
+curl http://localhost:8080/incidents
 ```
 
-## Deployment
+### Updating Incident Status
 
-1. Build the WAR file using the command above
-2. Copy `target/weblogic-demo.war` to your WebLogic deployments directory
-3. Or deploy through WebLogic Admin Console:
-   - Navigate to Deployments
-   - Click "Install"
-   - Select the WAR file
-   - Follow the deployment wizard
-
-## Testing the Application
-
-After deployment, access:
-
-- **Home Page**: `http://localhost:7001/weblogic-demo/`
-- **REST Endpoint**: `http://localhost:7001/weblogic-demo/api/hello`
-
-(Replace `localhost:7001` with your WebLogic server address and port)
-
-## Expected Output
-
-When you access `/api/hello`, you should see:
-
-```
-Hello from WebLogic Demo App 🚀
+```bash
+curl -X PUT http://localhost:8080/incidents/1/status \
+  -H "Content-Type: application/json" \
+  -d '{"status": "IN_PROGRESS"}'
 ```
 
-## Technology Stack
+### Health Check
 
-- Java 11
-- Maven 3
-- JAX-RS 2.1 (REST API)
-- Servlet API 4.0
-- JSP
+```bash
+curl http://localhost:8080/health
+```
 
-## Notes
+## 🎯 Sample Data
 
-- Dependencies are marked as `provided` scope since WebLogic provides these libraries
-- The application uses standard Java EE APIs for maximum compatibility
-- No external dependencies or database required
+The application starts with empty data. You can create incidents via:
+1. **Web UI**: Navigate to `/web/incidents/new`
+2. **REST API**: Use POST `/incidents` endpoint
+3. **Sample curl commands** (see Usage Examples above)
+
+## 📝 Logging
+
+The application provides comprehensive logging:
+
+- **API Requests**: All REST API calls are logged
+- **Business Operations**: Service layer operations
+- **Error Handling**: Detailed error logging
+- **Performance**: Request/response timing
+
+Log levels can be configured in `application.properties`.
+
+## 🔒 Production Considerations
+
+### Security
+- Input validation on all endpoints
+- Proper error handling without sensitive data exposure
+- CORS configuration for cross-origin requests
+
+### Performance
+- Thread-safe concurrent data structures
+- Efficient in-memory storage
+- Proper resource management
+
+### Monitoring
+- Health check endpoints
+- Application metrics
+- Structured logging
+
+## 🧪 Testing
+
+### Manual Testing
+1. Start the application
+2. Navigate to `http://localhost:8080`
+3. Create, view, and manage incidents through the web interface
+4. Test REST APIs using curl or Postman
+
+### API Testing with Postman
+Import the following endpoints into Postman:
+- Base URL: `http://localhost:8080`
+- Test all CRUD operations
+- Verify error handling with invalid data
+
+## 📦 Deployment
+
+### WAR File Deployment
+1. Build: `mvn clean package`
+2. Deploy `target/incident-management.war` to WebLogic
+3. Configure environment variables if needed
+4. Access via WebLogic server URL
+
+### Environment-Specific Configuration
+- **Development**: Default configuration works
+- **Production**: Set `APP_ENV=prod` environment variable
+
+## 🤝 Contributing
+
+1. Follow the existing code structure
+2. Add proper logging for new features
+3. Include input validation
+4. Update documentation for new endpoints
+
+## 📄 License
+
+This is a demonstration application for educational purposes.
+
+---
+
+**Built with ❤️ for production-ready incident management**
